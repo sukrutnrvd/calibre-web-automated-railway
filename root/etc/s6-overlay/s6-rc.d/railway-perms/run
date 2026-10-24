@@ -1,0 +1,7 @@
+#!/usr/bin/with-contenv bash
+# /calibre-library ve /cwa-book-ingest sembolik link olduğu için CWA'nın kendi
+# "chown -R" komutları linkin içine girmiyor. Kütüphane oluşturulduktan sonra
+# (cwa-auto-library) gerçek klasörlerin sahipliğini burada düzeltiyoruz.
+echo "[railway-perms] Kütüphane ve ingest klasörlerinin sahipliği abc:abc yapılıyor..."
+chown -R abc:abc /config/calibre-library /config/cwa-book-ingest
+echo "[railway-perms] Tamam."
