@@ -1,7 +1,13 @@
 #!/usr/bin/with-contenv bash
-# /calibre-library ve /cwa-book-ingest sembolik link olduğu için CWA'nın kendi
-# "chown -R" komutları linkin içine girmiyor. Kütüphane oluşturulduktan sonra
-# (cwa-auto-library) gerçek klasörlerin sahipliğini burada düzeltiyoruz.
-echo "[railway-perms] Kütüphane ve ingest klasörlerinin sahipliği abc:abc yapılıyor..."
+# Railway startup steps. Runs after cwa-auto-library and before the app starts.
+
+# 1) /calibre-library and /cwa-book-ingest are symlinks, so CWA's own "chown -R"
+#    calls don't descend into them. Fix ownership of the real directories.
+echo "[railway-perms] Setting ownership of library and ingest folders to abc:abc..."
 chown -R abc:abc /config/calibre-library /config/cwa-book-ingest
-echo "[railway-perms] Tamam."
+echo "[railway-perms] Done."
+
+# 2) If the admin password is still the default, replace it with ADMIN_PASSWORD.
+#    Runs as abc because app.db is owned by abc.
+s6-setuidgid abc python3 /etc/railway/set-admin-password.py || \
+  echo "[railway-admin-password] Could not set the password; starting the app anyway."
